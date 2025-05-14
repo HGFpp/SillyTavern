@@ -24,11 +24,11 @@
             }
             body {
                 min-height: 100vh;
-    min-height: -webkit-fill-available;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    position: relative;
-    background-color: #1a1a1a;
-    overflow: hidden;
+                min-height: -webkit-fill-available;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+                position: relative;
+                background-color: #1a1a1a;
+                overflow: hidden;
             }
             .background {
                 position: fixed;
@@ -406,7 +406,7 @@
         <script>
             $(document).ready(function () {
                 // 忘记密码按钮事件
-                $("#recoverPassword").click(async function (e) {
+                $("#recoverPassword").off('click').on('click', async function (e) {
                     e.preventDefault();
                     const handle = $.trim($("#userHandle").val());
                     if (handle === "") {
@@ -414,43 +414,53 @@
                         return;
                     }
                     $("#userHandleRecovery").val(handle);
-                    const failed = await sendRecoveryPart1(handle);
-                    if (!failed) {
-                        $('#loginForm').hide();
+                    try {
+                        const failed = await sendRecoveryPart1(handle);
+                        if (!failed) {
+                            $("#loginForm").hide();
+                            $("#passwordRecoveryBlock").show();
+                        }
+                    } catch (error) {
+                        console.error("密码恢复失败:", error);
+                        displayError("密码恢复失败，请重试");
                     }
                 });
 
-                $('#sendRecovery').off('click').on('click', async () => {
+                // 重置密码按钮事件
+                $("#sendRecovery").off('click').on('click', async () => {
                     const handle = String($("#userHandleRecovery").val());
-                    const code = String($('#recoveryCode').val());
-                    const newPassword = String($('#newPassword').val());
-                    await sendRecoveryPart2(handle, code, newPassword);
+                    const code = String($("#recoveryCode").val());
+                    const newPassword = String($("#newPassword").val());
+                    try {
+                        await sendRecoveryPart2(handle, code, newPassword);
+                    } catch (error) {
+                        console.error("重置密码失败:", error);
+                        displayError("重置密码失败，请检查恢复码");
+                    }
                 });
 
                 // 返回登录按钮事件
-                $("#backToLogin").click(function (e) {
+                $("#backToLogin").off('click').on('click', function (e) {
                     e.preventDefault();
                     $("#passwordRecoveryBlock").hide();
                     $("#loginForm").show();
                 });
 
                 // 登录按钮事件
-                $("#loginButton")
-                    .off("click")
-                    .on("click", async function () {
-                        const handle = $.trim($("#userHandle").val());
-                        const password = $.trim($("#userPassword").val());
-                        if (handle === "" || password === "") {
-                            displayError("请输入用户名和密码");
-                            return;
-                        }
-                        try {
-                            await performLogin(handle, password);
-                        } catch (error) {
-                            console.error("登录失败:", error);
-                            displayError(error.message);
-                        }
-                    });
+                $("#loginButton").off('click').on('click', async function () {
+                    const handle = $.trim($("#userHandle").val());
+                    const password = $.trim($("#userPassword").val());
+                    if (handle === "" || password === "") {
+                        displayError("请输入用户名和密码");
+                        return;
+                    }
+                    try {
+                        await performLogin(handle, password);
+                    } catch (error) {
+                        console.error("登录失败:", error);
+                        displayError(error.message);
+                    }
+                });
             });
 
             function displayError(message) {
@@ -459,13 +469,13 @@
                 }
                 const container = $(".toast-container");
                 const toast = $(`
-                <div class="toast">
-                    <div class="toast-content">
-                        <span class="toast-message">${message}</span>
-                        <span class="toast-close">&times;</span>
+                    <div class="toast">
+                        <div class="toast-content">
+                            <span class="toast-message">${message}</span>
+                            <span class="toast-close">×</span>
+                        </div>
                     </div>
-                </div>
-            `);
+                `);
                 container.append(toast);
                 toast.find(".toast-close").click(() => {
                     toast.remove();
