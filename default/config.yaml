@@ -1,479 +1,240 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, viewport-fit=cover, initial-scale=1, maximum-scale=1.0, user-scalable=no"
-        />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <title>登录</title>
-        <style>
-            :root {
-                --primary-color: #4a90e2;
-                --text-color: #ffffff;
-                --card-bg: rgba(255, 255, 255, 0.1);
-                --input-bg: rgba(255, 255, 255, 0.1);
-                --shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            }
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                min-height: 100vh;
-    min-height: -webkit-fill-available;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    position: relative;
-    background-color: #1a1a1a;
-    overflow: hidden;
-            }
-            .background {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-image: url("img/background.jpg");
-                background-size: cover;
-                background-position: center;
-                filter: brightness(0.8);
-                z-index: 1;
-            }
-            .container {
-                position: relative;
-                z-index: 2;
-                min-height: 100vh;
-                display: flex;
-            }
-            .left-section {
-                flex: 1;
-            }
-            .right-section {
-                flex: 1;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 2rem;
-            }
-            .login-card {
-                width: 100%;
-                max-width: 380px;
-                background: var(--card-bg);
-                padding: 2.5rem;
-                border-radius: 16px;
-                box-shadow: var(--shadow);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            .logo-section {
-                text-align: center;
-                margin-bottom: 2.5rem;
-            }
-            .logo {
-                width: 72px;
-                height: auto;
-                margin-bottom: 1rem;
-            }
-            h1 {
-                color: var(--text-color);
-                font-size: 1.75rem;
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-            }
-            .subtitle {
-                color: rgba(255, 255, 255, 0.8);
-                font-size: 0.95rem;
-                margin-bottom: 2rem;
-            }
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
-            .form-group label {
-                display: block;
-                color: var(--text-color);
-                font-size: 0.9rem;
-                font-weight: 500;
-                margin-bottom: 0.5rem;
-            }
-            .form-input {
-                width: 100%;
-                padding: 0.875rem 1rem;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 8px;
-                background: var(--input-bg);
-                font-size: 1rem;
-                color: var(--text-color);
-                transition: all 0.2s ease;
-            }
-            .form-input::placeholder {
-                color: rgba(255, 255, 255, 0.5);
-            }
-            .form-input:focus {
-                outline: none;
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-            }
-            .submit-btn {
-                width: 100%;
-                padding: 0.875rem;
-                background: var(--primary-color);
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 500;
-                cursor: pointer;
-                transition: transform 0.2s ease, background-color 0.2s ease;
-            }
-            .submit-btn:hover {
-                background: #357abd;
-                transform: translateY(-1px);
-            }
-            .submit-btn:active {
-                transform: translateY(0);
-            }
-            @media (max-width: 768px) {
-                .container {
-                    flex-direction: column;
-                }
-                .left-section {
-                    display: none;
-                }
-                .right-section {
-                    flex: 1;
-                    width: 100%;
-                    padding: 1.5rem;
-                }
-                .login-card {
-                    padding: 1.75rem;
-                }
-                .background {
-                    background-position: center 25%;
-                }
-            }
-            @supports (padding: max(0px)) {
-                .right-section {
-                    padding: max(2rem, env(safe-area-inset-top))
-                        max(2rem, env(safe-area-inset-right))
-                        max(2rem, env(safe-area-inset-bottom))
-                        max(2rem, env(safe-area-inset-left));
-                }
-            }
-            #shadow_popup {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-                display: none;
-            }
-            #userList {
-                margin-bottom: 20px;
-            }
-            .userSelect {
-                display: flex;
-                align-items: center;
-                padding: 10px;
-                margin: 5px 0;
-                cursor: pointer;
-                border-radius: 8px;
-                background: var(--input-bg);
-            }
-            .userSelect:hover {
-                background: var(--primary-color);
-            }
-            .avatar {
-                width: 40px;
-                height: 40px;
-                margin-right: 10px;
-            }
-            .avatar img {
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-            }
-            .userName {
-                color: var(--text-color);
-                margin-right: 10px;
-            }
-            .userHandle {
-                color: rgba(255, 255, 255, 0.6);
-            }
-            .user-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 1rem;
-                margin-bottom: 2rem;
-            }
-            .user-card {
-                background: var(--input-bg);
-                border-radius: 12px;
-                padding: 1rem;
-                text-align: center;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            .user-card:hover {
-                background: var(--primary-color);
-                transform: translateY(-2px);
-            }
-            .user-avatar {
-                width: 64px;
-                height: 64px;
-                border-radius: 50%;
-                margin: 0 auto 0.5rem;
-            }
-            .user-name {
-                color: var(--text-color);
-                font-size: 0.9rem;
-                margin: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            .error-message {
-                color: #ff4444;
-                background-color: rgba(255, 68, 68, 0.1);
-                border: 1px solid #ff4444;
-                padding: 10px;
-                border-radius: 4px;
-                margin-bottom: 15px;
-                display: none;
-                text-align: center;
-            }
-            .toast-container {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1000;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .toast {
-                background-color: rgba(255, 68, 68, 0.9);
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
-                min-width: 300px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                animation: slideIn 0.3s ease-out;
-            }
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            .toast-content {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            input:disabled {
-                background-color: var(--input-bg);
-                opacity: 0.7;
-                cursor: not-allowed;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="background"></div>
-        <div id="shadow_popup" style="opacity: 0"></div>
-        <div class="container">
-            <div class="left-section"></div>
-            <div class="right-section">
-                <div class="login-card">
-                    <div class="logo-section">
-                        <img src="img/logo.png" alt="Logo" class="logo" />
-                        <h1>SillyTavern</h1>
-                        <p class="subtitle">请登录以继续使用</p>
-                    </div>
-                    <!-- 登录表单 -->
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label for="userHandle">用户名</label>
-                            <input
-                                type="text"
-                                id="userHandle"
-                                class="form-input"
-                                placeholder="输入您的用户名"
-                                autocomplete="username"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label for="userPassword">密码</label>
-                            <input
-                                type="password"
-                                id="userPassword"
-                                class="form-input"
-                                placeholder="输入您的密码"
-                                autocomplete="current-password"
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            id="loginButton"
-                            class="submit-btn"
-                        >
-                            登录
-                        </button>
-                        <div
-                            class="form-group"
-                            style="text-align: center; margin-top: 1rem"
-                        >
-                            <a
-                                href="#"
-                                id="recoverPassword"
-                                style="
-                                    color: var(--text-color);
-                                    text-decoration: none;
-                                "
-                            >
-                                忘记密码？
-                            </a>
-                        </div>
-                    </form>
-                    <!-- 密码恢复区块 -->
-                    <form id="passwordRecoveryBlock" style="display: none">
-                        <div class="form-group">
-                            <label for="userHandleRecovery">用户名</label>
-                            <input
-                                type="text"
-                                id="userHandleRecovery"
-                                class="form-input"
-                                disabled
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label for="recoveryCode">恢复码</label>
-                            <input
-                                type="text"
-                                id="recoveryCode"
-                                class="form-input"
-                                placeholder="输入恢复码"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label for="newPassword">新密码</label>
-                            <input
-                                type="password"
-                                id="newPassword"
-                                class="form-input"
-                                placeholder="输入新密码"
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            id="sendRecovery"
-                            class="submit-btn"
-                        >
-                            重置密码
-                        </button>
-                        <div
-                            class="form-group"
-                            style="text-align: center; margin-top: 1rem"
-                        >
-                            <a
-                                href="#"
-                                id="backToLogin"
-                                style="
-                                    color: var(--text-color);
-                                    text-decoration: none;
-                                "
-                            >
-                                返回登录
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="toast-container"></div>
-        <script src="lib/jquery-3.5.1.min.js"></script>
-        <script src="scripts/login.js"></script>
-        <script>
-            $(document).ready(function () {
-                // 忘记密码按钮事件
-                $("#recoverPassword").click(async function (e) {
-                    e.preventDefault();
-                    const handle = $.trim($("#userHandle").val());
-                    if (handle === "") {
-                        displayError("请输入用户名");
-                        return;
-                    }
-                    $("#userHandleRecovery").val(handle);
-                    const failed = await sendRecoveryPart1(handle);
-                    if (!failed) {
-                        $('#loginForm').hide();
-                    }
-                });
+# -- DATA CONFIGURATION --
+# Root directory for user data storage
+dataRoot: ./data
+# -- SERVER CONFIGURATION --
+# Listen for incoming connections
+listen: false
+# Listen on a specific address, supports IPv4 and IPv6
+listenAddress:
+  ipv4: 0.0.0.0
+  ipv6: '[::]'
+# Enables IPv6 and/or IPv4 protocols. Need to have at least one enabled!
+# - Use option "auto" to automatically detect support
+# - Use true or false (no qoutes) to enable or disable each protocol
+protocol:
+    ipv4: true
+    ipv6: false
+# Prefers IPv6 for DNS. Enable this on ISPs that don't have issues with IPv6
+dnsPreferIPv6: false
+# The hostname that autorun opens.
+# - Use "auto" to let the server decide
+# - Use options like 'localhost', 'st.example.com'
+autorunHostname: "auto"
+# Server port
+port: 8000
+# Overrides the port for autorun in browser.
+# - Use -1 to use the server port.
+# - Specify a port to override the default.
+autorunPortOverride: -1
+# -- SSL options --
+ssl:
+  enabled: false
+  certPath: "./certs/cert.pem"
+  keyPath: "./certs/privkey.pem"
+# -- SECURITY CONFIGURATION --
+# Toggle whitelist mode
+whitelistMode: true
+# Whitelist will also verify IP in X-Forwarded-For / X-Real-IP headers
+enableForwardedWhitelist: true
+# Whitelist of allowed IP addresses
+whitelist:
+  - ::1
+  - 127.0.0.1
+# Automatically whitelist Docker host and gateway IPs
+whitelistDockerHosts: true
+# Toggle basic authentication for endpoints
+basicAuthMode: false
+# Basic authentication credentials
+basicAuthUser:
+  username: "user"
+  password: "password"
+# Enables CORS proxy middleware
+enableCorsProxy: false
+# -- REQUEST PROXY CONFIGURATION --
+requestProxy:
+  # If a proxy is enabled, all outgoing HTTP/HTTPS requests will be routed through it.
+  enabled: false
+  # Proxy URL. Possible protocols: http, https, socks, socks5, socks4, pac
+  url: "socks5://username:password@example.com:1080"
+  # Proxy bypass list. Requests to these hosts won't be routed through the proxy.
+  bypass:
+    - localhost
+    - 127.0.0.1
+# Enable multi-user mode
+enableUserAccounts: true
+# Enable discreet login mode: hides user list on the login screen
+enableDiscreetLogin: true
+# Enable's authlia based auto login. Only enable this if you
+# have setup and installed Authelia as a middle-ware on your
+# reverse proxy
+# https://www.authelia.com/
+# This will use auto login to an account with the same username
+# as that used for authlia. (Ensure the username in authlia
+# is an exact match with that in sillytavern)
+autheliaAuth: false
+# If `basicAuthMode` and this are enabled then
+# the username and passwords for basic auth are the same as those
+# for the individual accounts
+perUserBasicAuth: false
 
-                $('#sendRecovery').off('click').on('click', async () => {
-                    const handle = String($("#userHandleRecovery").val());
-                    const code = String($('#recoveryCode').val());
-                    const newPassword = String($('#newPassword').val());
-                    await sendRecoveryPart2(handle, code, newPassword);
-                });
+# User session timeout *in seconds* (defaults to 24 hours).
+## Set to a positive number to expire session after a certain time of inactivity
+## Set to 0 to expire session when the browser is closed
+## Set to a negative number to disable session expiration
+sessionTimeout: -1
+# Disable CSRF protection - NOT RECOMMENDED
+disableCsrfProtection: false
+# Disable startup security checks - NOT RECOMMENDED
+securityOverride: false
+# -- LOGGING CONFIGURATION --
+logging:
+  # Enable access logging to access.log file
+  # Records new connections with timestamp, IP address and user agent
+  enableAccessLog: true
+  # Minimum log level to display in the terminal (DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3)
+  minLogLevel: 0
+# -- RATE LIMITING CONFIGURATION --
+rateLimiting:
+  # Use X-Real-IP header instead of socket IP for rate limiting
+  # Only enable this if you are using a properly configured reverse proxy (like Nginx/traefik/Caddy)
+  preferRealIpHeader: false
+# -- ADVANCED CONFIGURATION --
+# Open the browser automatically
+autorun: true
+# Avoids using 'localhost' for autorun in auto mode.
+# use if you don't have 'localhost' in your hosts file
+avoidLocalhost: false
 
-                // 返回登录按钮事件
-                $("#backToLogin").click(function (e) {
-                    e.preventDefault();
-                    $("#passwordRecoveryBlock").hide();
-                    $("#loginForm").show();
-                });
+## BACKUP CONFIGURATION
+backups:
+  # Common settings for all backup types
+  common:
+    # Number of backups to keep for each chat and settings file
+    numberOfBackups: 50
+  chat:
+    # Enable automatic chat backups
+    enabled: true
+    # Verify integrity of chat files before saving
+    checkIntegrity: true
+    # Maximum number of chat backups to keep per user (starting from the most recent). Set to -1 to keep all backups.
+    maxTotalBackups: -1
+    # Interval in milliseconds to throttle chat backups per user
+    throttleInterval: 10000
 
-                // 登录按钮事件
-                $("#loginButton")
-                    .off("click")
-                    .on("click", async function () {
-                        const handle = $.trim($("#userHandle").val());
-                        const password = $.trim($("#userPassword").val());
-                        if (handle === "" || password === "") {
-                            displayError("请输入用户名和密码");
-                            return;
-                        }
-                        try {
-                            await performLogin(handle, password);
-                        } catch (error) {
-                            console.error("登录失败:", error);
-                            displayError(error.message);
-                        }
-                    });
-            });
+# THUMBNAILING CONFIGURATION
+thumbnails:
+  # Enable thumbnail generation
+  enabled: true
+  # Image format of avatar thumbnails:
+  # * "jpg": best compression with adjustable quality, no transparency
+  # * "png": preserves transparency but increases filesize by about 100%
+  # Changing this only affects new thumbnails. To recreate the old ones, clear out /thumbnails folder in your user data.
+  format: "jpg"
+  # JPG thumbnail quality (0-100)
+  quality: 95
+  # Maximum thumbnail dimensions per type [width, height]
+  dimensions: { 'bg': [160, 90], 'avatar': [96, 144] }
 
-            function displayError(message) {
-                if (!message || message.trim() === "") {
-                    return;
-                }
-                const container = $(".toast-container");
-                const toast = $(`
-                <div class="toast">
-                    <div class="toast-content">
-                        <span class="toast-message">${message}</span>
-                        <span class="toast-close">&times;</span>
-                    </div>
-                </div>
-            `);
-                container.append(toast);
-                toast.find(".toast-close").click(() => {
-                    toast.remove();
-                });
-                setTimeout(() => {
-                    toast.fadeOut(() => toast.remove());
-                }, 3000);
-            }
-        </script>
-    </body>
-</html>
+# PERFORMANCE-RELATED CONFIGURATION
+performance:
+  # Enables lazy loading of character cards. Improves performances with large card libraries.
+  # May have compatibility issues with some extensions.
+  lazyLoadCharacters: false
+  # The maximum amount of memory that parsed character cards can use. Set to 0 to disable memory caching.
+  memoryCacheCapacity: '100mb'
+  # Enables disk caching for character cards. Improves performances with large card libraries.
+  useDiskCache: true
+
+# Allow secret keys exposure via API
+allowKeysExposure: false
+# Skip new default content checks
+skipContentCheck: false
+# Allowed hosts for card downloads
+whitelistImportDomains:
+  - localhost
+  - cdn.discordapp.com
+  - files.catbox.moe
+  - raw.githubusercontent.com
+  - char-archive.evulid.cc
+# API request overrides (for KoboldAI and Text Completion APIs)
+## Note: host includes the port number if it's not the default (80 or 443)
+## Format is an array of objects:
+## - hosts:
+##   - example.com
+##   headers:
+##     Content-Type: application/json
+##   - 127.0.0.1:5001
+##   headers:
+##     User-Agent: "Googlebot/2.1 (+http://www.google.com/bot.html)"
+requestOverrides: []
+
+# EXTENSIONS CONFIGURATION
+extensions:
+  # Enable UI extensions
+  enabled: true
+  # Automatically update extensions when a release version changes
+  autoUpdate: true
+  models:
+    # Enables automatic model download from HuggingFace
+    autoDownload: true
+    # Additional models for extensions. Expects model IDs from HuggingFace model hub in ONNX format
+    classification: Cohee/distilbert-base-uncased-go-emotions-onnx
+    captioning: Xenova/vit-gpt2-image-captioning
+    embedding: Cohee/jina-embeddings-v2-base-en
+    speechToText: Xenova/whisper-small
+    textToSpeech: Xenova/speecht5_tts
+
+# Additional model tokenizers can be downloaded on demand.
+# Disabling will fallback to another locally available tokenizer.
+enableDownloadableTokenizers: true
+# -- OPENAI CONFIGURATION --
+# A placeholder message to use in strict prompt post-processing mode when the prompt doesn't start with a user message
+promptPlaceholder: "[Start a new chat]"
+openai:
+  # Will send a random user ID to OpenAI completion API
+  randomizeUserId: false
+  # If not empty, will add this as a system message to the start of every caption completion prompt
+  # Example: "Perform the instructions to the best of your ability.\n" (for LLaVA)
+  # Not used in image inlining mode
+  captionSystemPrompt: ""
+# -- DEEPL TRANSLATION CONFIGURATION --
+deepl:
+  # Available options: default, more, less, prefer_more, prefer_less
+  formality: default
+# -- MISTRAL API CONFIGURATION --
+mistral:
+  # Enables prefilling of the reply with the last assistant message in the prompt
+  # CAUTION: The prefix is echoed into the completion. You may want to use regex to trim it out.
+  enablePrefix: false
+# -- OLLAMA API CONFIGURATION --
+ollama:
+  # Controls how long the model will stay loaded into memory following the request
+  # * -1: Keep the model loaded indefinitely
+  # * 0: Unload the model immediately after the request
+  # * N (any positive number): Keep the model loaded for N seconds after the request.
+  keepAlive: -1
+  # Controls the "num_batch" (batch size) parameter of the generation request
+  # * -1: Use the default value of the model
+  # * N (positive number): Use the specified value. Must be a power of 2, e.g. 128, 256, 512, etc.
+  batchSize: -1
+# -- ANTHROPIC CLAUDE API CONFIGURATION --
+claude:
+  # Enables caching of the system prompt (if supported).
+  # https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+  # -- IMPORTANT! --
+  # Use only when the prompt before the chat history is static and doesn't change between requests
+  # (e.g {{random}} macro or lorebooks not as in-chat injections).
+  # Otherwise, you'll just waste money on cache misses.
+  enableSystemPromptCache: false
+  # Enables caching of the message history at depth (if supported).
+  # https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+  # -- IMPORTANT! --
+  # Use with caution. Behavior may be unpredictable and no guarantees can or will be made.
+  # Set to an integer to specify the desired depth. 0 (which does NOT include the prefill)
+  # should be ideal for most use cases.
+  # Any value other than a non-negative integer will be ignored and caching at depth will not be enabled.
+  cachingAtDepth: -1
+# -- SERVER PLUGIN CONFIGURATION --
+enableServerPlugins: false
+# Attempt to automatically update server plugins on startup
+enableServerPluginsAutoUpdate: true
