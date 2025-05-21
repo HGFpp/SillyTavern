@@ -46,8 +46,8 @@ whitelistDockerHosts: true
 basicAuthMode: false
 # Basic authentication credentials
 basicAuthUser:
-  username: "user"
-  password: "password"
+  username: "gcc"
+  password: "123456"
 # Enables CORS proxy middleware
 enableCorsProxy: false
 # -- REQUEST PROXY CONFIGURATION --
